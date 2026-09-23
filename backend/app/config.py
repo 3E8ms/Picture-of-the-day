@@ -2,6 +2,7 @@
 
 from functools import lru_cache
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -19,6 +20,17 @@ class Settings(BaseSettings):
     upload_dir: str = "uploads"
     max_upload_mb: int = 5
     seed_on_startup: bool = False
+
+    @field_validator("database_url")
+    @classmethod
+    def _normalize_db_url(cls, v: str) -> str:
+        # Render/Heroku-style URLs use the postgres:// scheme, which
+        # SQLAlchemy 2.0 does not accept — rewrite to postgresql+psycopg2://.
+        if v.startswith("postgres://"):
+            return "postgresql+psycopg2://" + v[len("postgres://"):]
+        if v.startswith("postgresql://"):
+            return "postgresql+psycopg2://" + v[len("postgresql://"):]
+        return v
 
     @property
     def cors_origin_list(self) -> list[str]:

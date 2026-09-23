@@ -117,6 +117,16 @@ rejection, mutual-follow flags, feed scoping, and auth enforcement. They run
 against a throwaway SQLite file — the SQL is portable (no Postgres-specific
 features).
 
+## Resume bullets (copy-paste)
+
+- Built "Picture of the Day", an Instagram-like full-stack app (FastAPI +
+  React/TypeScript + PostgreSQL) with JWT auth, image uploads, likes, threaded
+  comments, and a follow graph.
+- Designed a normalized schema (self-referencing comments/follows with DB-level
+  uniqueness + check constraints) and batched feed serialization to avoid N+1
+  queries.
+- Implemented idempotent like/follow toggles, optimistic UI updates, and a
+  seeded demo dataset; 12 passing API tests, clean `tsc` + production build.
 
 ## Notes / trade-offs
 

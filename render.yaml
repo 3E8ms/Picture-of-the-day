@@ -1,0 +1,35 @@
+# Render Blueprint: deploys Picture of the Day on Render's free tier.
+# Dashboard → New → Blueprint → select the repo containing this file → Apply.
+services:
+  - type: web
+    name: picture-of-the-day-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health
+    envVars:
+      - key: database_url
+        fromDatabase:
+          name: picture-of-the-day-db
+          property: connectionString
+      - key: jwt_secret_key
+        generateValue: true
+      - key: cors_origins
+        value: https://picture-of-the-day-web.onrender.com
+      - key: seed_on_startup
+        value: "true"
+
+  - type: web
+    name: picture-of-the-day-web
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install --no-audit --no-fund && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://picture-of-the-day-api.onrender.com
+
+databases:
+  - name: picture-of-the-day-db
+    plan: free
